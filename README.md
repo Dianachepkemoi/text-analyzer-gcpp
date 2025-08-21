@@ -1,10 +1,11 @@
+
 # Insight-Agent on Google Cloud (Serverless, Terraform, CI/CD)
 
 A minimal FastAPI service deployed as a **private Cloud Run** API, fully provisioned with **Terraform** and continuously delivered via **GitHub Actions** using **Workload Identity Federation** (no long‑lived secrets).
 
----
 
-## ✨ What’s Included
+
+##  What’s Included
 - **FastAPI** app exposing `POST /analyze` to count words & characters
 - **Dockerfile** (non-root user, slim base image, port 8080)
 - **Terraform** to create:
@@ -16,11 +17,11 @@ A minimal FastAPI service deployed as a **private Cloud Run** API, fully provisi
   - Test → Build → Push (Artifact Registry) → Terraform Apply (deploy new image)
 - Unit tests (`pytest`) and health endpoint
 
----
 
-## 🏗️ Architecture Overview
 
-```
+## Architecture Overview
+
+
 Developer Push to main
         │
         ▼
@@ -31,23 +32,23 @@ GitHub Actions (OIDC → GCP)
   - Terraform Apply (update Cloud Run image)
         │
         ▼
-Artifact Registry  ──► Cloud Run (private, IAM‑guarded) ──► FastAPI app
-```
+Artifact Registry   Cloud Run (private, IAM‑guarded) FastAPI app
+
 
 **Key Services:** Cloud Run, Artifact Registry, IAM, Cloud Build API (for docker auth), Terraform
 
----
 
-## 🔐 Security & Access
+
+##  Security & Access
 - **No public access**: the service does **not** grant `roles/run.invoker` to `allUsers`.
 - **Ingress** defaults to `INGRESS_TRAFFIC_INTERNAL_ONLY`. For local testing you may set `ingress = "INGRESS_TRAFFIC_ALL"` in Terraform and keep IAM‑based restriction.
 - **Least privilege** runtime SA:
   - `roles/logging.logWriter`, `roles/monitoring.metricWriter`, `roles/artifactregistry.reader`.
 - **CI Auth**: GitHub → Google via **Workload Identity Federation** (OIDC). No JSON keys.
 
----
 
-## 🧠 Design Decisions
+
+##  Design Decisions
 - **Cloud Run**: fully managed, scales to zero, per‑request autoscaling, simple container interface.
 - **FastAPI**: fast, typed models, easy validation; production via `uvicorn`.
 - **Artifact Registry**: regional image storage with fine‑grained IAM.
@@ -55,9 +56,9 @@ Artifact Registry  ──► Cloud Run (private, IAM‑guarded) ──► FastAP
 - **Private by default**: IAM‑only invocation + `INGRESS_TRAFFIC_INTERNAL_ONLY` for defense‑in‑depth.
 - **Image tags**: use commit SHA to produce immutable, reproducible deployments.
 
----
 
-## 🚀 Run Locally (optional)
+
+##  Run Locally (optional)
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
@@ -66,9 +67,9 @@ uvicorn app.main:app --reload --port 8080
 curl -X POST http://localhost:8080/analyze -H "content-type: application/json" -d '{"text":"I love cloud engineering!"}'
 ```
 
----
 
-## ☁️ Deploy on GCP (from scratch)
+
+##  Deploy on GCP (from scratch)
 
 ### 0) Prerequisites
 - A GCP **project ID** and owner/editor access (or adapt for limited roles).
@@ -138,9 +139,9 @@ ID_TOKEN=$(gcloud auth print-identity-token)
 curl -X POST "${SERVICE_URL}/analyze"   -H "Authorization: Bearer ${ID_TOKEN}"   -H "Content-Type: application/json"   -d '{"text":"Hello from Cloud Run!"}'
 ```
 
----
 
-## 📁 Repo Layout
+
+## Repo Layout
 ```
 .
 ├── app/
@@ -164,20 +165,17 @@ curl -X POST "${SERVICE_URL}/analyze"   -H "Authorization: Bearer ${ID_TOKEN}"  
 ├── pyproject.toml
 ├── .gitignore
 └── README.md
-```
 
----
-
-## ✅ API Contract
+##  API Contract
 - `POST /analyze`
   - **Request:** `{"text": "some string"}`
   - **Response:** `{"original_text": "...", "word_count": 3, "character_count": 17}`
 - `GET /healthz` → `{"status":"ok"}`
 
----
-
-## 🧩 Notes & Extensions
+## Notes & Extensions
 - Swap FastAPI ↔ Flask with minimal changes.
 - Add Secret Manager if you introduce secrets.
 - Switch ingress to `INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER` and add an internal HTTP(S) LB if you need VPC‑only access surfaces.
 - Add more tests and a linter (e.g., ruff) for stricter CI gates.
+# text-analyzer-gcpp
+Python REST API for text analysis, deployed on GCP with Terraform &amp; CI/CD
