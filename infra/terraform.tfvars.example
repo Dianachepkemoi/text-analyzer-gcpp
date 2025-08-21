@@ -1,0 +1,17 @@
+# Copy this file to terraform.tfvars and fill in your values
+
+project_id    = "your-project-id"
+region        = "us-central1"
+repository_id = "insight-agent-repo"
+service_name  = "insight-agent"
+
+# The CI pipeline will pass the exact image value automatically; for local testing you can set it manually:
+# image = "us-central1-docker.pkg.dev/your-project-id/insight-agent-repo/insight-agent:dev"
+
+# Optionally restrict which identities can invoke the service (no public access by default)
+invoker_members = [
+  # "serviceAccount:client-sa@your-project-id.iam.gserviceaccount.com"
+]
+
+# Ingress: internal only by default. If you have issues during local testing, set to INGRESS_TRAFFIC_ALL
+# ingress = "INGRESS_TRAFFIC_ALL"
